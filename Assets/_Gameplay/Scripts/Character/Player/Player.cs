@@ -1,0 +1,149 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+[RequireComponent(typeof(Rigidbody), typeof(CapsuleCollider))]
+public class Player : Character
+{
+    [SerializeField] private Rigidbody rb;
+    [SerializeField] private VariableJoystick variableJoystick;
+    [SerializeField]
+    private VariableJoystick Joystick
+    {
+        get
+        {
+            if (variableJoystick == null)
+            {
+                variableJoystick = FindObjectOfType<VariableJoystick>();
+            }
+            return variableJoystick;
+        }
+    }
+
+    public float speed;
+
+    public CounterTimer counterTime = new CounterTimer();
+    public float TIME_THROW_DELAY = 1.5f;
+
+    private bool isMoving;
+
+    private bool IsCanAttack;
+
+    public int Coin => Score * 10;
+
+
+    ColorType colorType = ColorType.Blue;
+    PantType pantType = PantType.Pant_1;
+    HatType hatType = HatType.HAT_Arrow;
+    WeaponType weaponType = WeaponType.W_Candy_1;
+    AccessoryType accessoryType = AccessoryType.ACC_Book;
+
+    private float time = 0;
+    private float times = 1.5f;
+
+
+
+    private void Start()
+    {
+        OnInit();
+    }
+
+    public override void OnInit()
+    {
+        base.OnInit();
+        TF.rotation = Quaternion.Euler(Vector3.up * 180);
+        SetSize(MIN_SIZE);
+
+    }
+    private void FixedUpdate()
+    {
+        if (GameManager.Ins.IsState(GameState.GamePlay))
+        {
+            if (Joystick.Horizontal != 0 || Joystick.Vertical != 0)
+            {
+                IsCanAttack = false;
+                rb.velocity = new Vector3(Joystick.Horizontal * speed * Time.fixedDeltaTime, rb.velocity.y, Joystick.Vertical * speed * Time.fixedDeltaTime);
+                rb.rotation = Quaternion.LookRotation(rb.velocity);
+                ChangeAnim(Constant.ANIM_RUN);
+                isMoving = true;
+                currentSkin.Weapon.OnEnable();
+            }
+            else
+            {
+                isMoving = false;
+                OnStopMove();
+            }
+
+            if (IsCanAttack)
+            {
+                OnAttack();
+            }
+        }
+      
+        
+    }
+
+    public void OnStopMove()
+    {
+        if (IsCanAttack) return;
+
+        rb.velocity = Vector3.zero;
+        ChangeAnim(Constant.ANIM_IDLE);
+
+        // tìm enemy lien tục tring này
+        // tìm đc thì iscanattack = true;
+        target = GetCharacterInRange();
+        if(target != null && !target.IsDead)
+        {
+            IsCanAttack = true;
+        }
+    }
+
+    public override void OnAttack()
+    {
+        base.OnAttack();
+        if(target != null && IsCanAttack  && currentSkin.Weapon.WeaponAcitve)
+        {
+            Throw();
+
+           /* time += Time.deltaTime;
+            if(times < time)
+            {
+                Throw();
+                ResetAnim();
+            }*/
+        }
+    }
+
+    public override void AddTarget(Character target)
+    {
+        base.AddTarget(target);
+        if (!target.IsDead)
+        {
+            target.SetMask(true);
+        }
+    }
+
+    public override void RemoveTarget(Character target)
+    {
+        base.RemoveTarget(target);
+        target.SetMask(false);
+    }
+
+    public void OnRevive()
+    {
+        ChangeAnim(Constant.ANIM_IDLE);
+        IsDead = false;
+        ClearTarget();
+    }
+
+    public override void WearClothes()
+    {
+        base.WearClothes();
+        ChangeColor(colorType);
+        ChangePant(pantType);
+        ChangeWeapon(weaponType);
+        ChangeHat(hatType);
+        ChangeAccessory(accessoryType);
+    }
+}
