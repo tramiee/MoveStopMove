@@ -8,17 +8,20 @@ public class AttackState : IState<Enemy>
     {
         t.StopMove();
         t.OnAttack();
+        t.ChangeAnim(Constant.ANIM_ATTACK);
         if (t.WeaponActive)
         {
+            t.Throw();
             t.Counter.Start(
                 () =>
                 {
                     t.Throw();
                     t.Counter.Start(
-                        () =>
-                        {
-                            t.ChangeState(Utilities.Chance(50, 100) ? new IdleState() : new PatrolState());
-                        }, Character.TIME_DELAY_THROW);
+                    () =>
+                    {
+                        t.ChangeState(Utilities.Chance(50, 100) ? new IdleState() : new PatrolState());
+
+                    }, Character.TIME_DELAY_THROW);
                 }, Character.TIME_DELAY_THROW
             );
         }

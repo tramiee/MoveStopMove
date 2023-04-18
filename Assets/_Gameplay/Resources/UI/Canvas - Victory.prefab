@@ -384,7 +384,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsDestroyOnClose: 0
-  txtCoin: {fileID: 0}
+  txtCoin: {fileID: 6926273316603659444}
 --- !u!1 &3574699360387647673
 GameObject:
   m_ObjectHideFlags: 0

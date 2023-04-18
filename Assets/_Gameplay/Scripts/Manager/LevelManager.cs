@@ -20,6 +20,7 @@ public class LevelManager : Singleton<LevelManager>
 
     private void Start()
     {
+        player.OnInit();
         levelIndex = 0;
         OnLoadLevel(levelIndex);
         OnInit();
@@ -160,7 +161,7 @@ public class LevelManager : Singleton<LevelManager>
 
     public void OnRevive()
     {
-        player.TF.position = RandomPoint();
+        player.TF.position = RandomPoint() + new Vector3(0, 1f, 0);
         player.OnRevive();
     }
     public void OnLoadLevel(int level)
@@ -172,7 +173,7 @@ public class LevelManager : Singleton<LevelManager>
         currentLevel = Instantiate(levels[level]);
     }
 
-    public void OnNextLevel()
+    public void NextLevel()
     {
         levelIndex++;
     }

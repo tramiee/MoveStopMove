@@ -81,3 +81,8 @@ public enum AccessoryType
     ACC_Headphone = PoolType.ACC_Headphone,
     ACC_Shield = PoolType.ACC_Shield,
 }
+
+public enum SkinType
+{
+    SKIN_Normal = PoolType.SKIN_Normal,
+}

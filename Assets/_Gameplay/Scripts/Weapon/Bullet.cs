@@ -11,6 +11,7 @@ public class Bullet : GameUnit
     {
         this.character = character;
         transform.forward = (target - transform.position).normalized;
+        isRunning = true;
     }
     public void OnDespawn()
     {
@@ -31,6 +32,7 @@ public class Bullet : GameUnit
             if(character != this.character)
             {
                 character.OnHit();
+                character.AddScore(1);
             }
         }
     }

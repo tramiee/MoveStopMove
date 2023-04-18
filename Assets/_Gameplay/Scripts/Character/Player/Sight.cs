@@ -24,6 +24,7 @@ public class Sight : MonoBehaviour
         {
             Character target = other.GetComponent<Character>();
             character.RemoveTarget(target);
+            Debug.Log(target);
         }
     }
 }

@@ -2,64 +2,77 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MiniPool<T>
+public class MiniPool<T> where T : Component
 {
-    private List<GameObject> list = new List<GameObject>();
-    private Dictionary<GameObject,T> dict = new Dictionary<GameObject,T>();
-    GameObject prefab;
+    private List<T> listActives = new List<T>();
+    int index = 0;
+
+    T prefab;
     Transform parent;
 
-    public void OnInit(GameObject prefab, Transform parent = null)
+    public void OnInit(T prefab, int amount, Transform parent = null)
     {
         this.prefab = prefab;
         this.parent = parent;
+        this.index = 0;
+
+        for (int i = 0; i < amount; i++)
+        {
+            Despawn(GameObject.Instantiate(prefab, parent));
+        }
     }
 
     public T Spawn(Vector3 pos, Quaternion rot)
     {
-        GameObject go = null;
+        T go = Spawn();
 
-        for (int i = 0; i < list.Count; i++)
-        {
-            if (!list[i].activeInHierarchy)
-            {
-                go = list[i];
-                break;
-            }
-        }
+        go.transform.SetPositionAndRotation(pos, rot);
+
+        return go;
+    }
+
+    public T Spawn()
+    {
+        T go = index < listActives.Count ? listActives[index] : null;
 
         if (go == null)
         {
             go = GameObject.Instantiate(prefab, parent);
-            list.Add(go);
-            dict.Add(go, go.GetComponent<T>());
+            listActives.Add(go);
         }
 
-        go.transform.SetPositionAndRotation(pos, rot);
-        go.SetActive(true);
+        index++;
+        go.gameObject.SetActive(true);
 
-        return dict[go];
+        return go;
+    }
+
+    public void Despawn(T obj)
+    {
+        if (obj.gameObject.activeSelf)
+        {
+            obj.gameObject.SetActive(false);
+        }
     }
 
     public void Collect()
     {
-        for (int i = 0; i < list.Count; i++)
+        for (int i = 0; i < index; i++)
         {
-            if (list[i].activeInHierarchy)
-            {
-                list[i].SetActive(false);
-            }
+            Despawn(listActives[i]);
         }
+        index = 0;
     }
 
     public void Release()
     {
-        for (int i = 0; i < list.Count; i++)
+        Collect();
+        for (int i = 0; i < listActives.Count; i++)
         {
-            GameObject.Destroy(list[i]);
+            GameObject.Destroy(listActives[i].gameObject);
         }
-
-        list.Clear();
+        listActives.Clear();
+        index = 0;
     }
 
 }

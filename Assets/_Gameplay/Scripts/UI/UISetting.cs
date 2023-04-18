@@ -23,8 +23,6 @@ public class UISetting : UICanvas
 
     public void HomeButton()
     {
-        /*UIManager.Ins.OpenUI<UIMainMenu>();
-        UIManager.Ins.CloseUI<UISetting>();*/
         LevelManager.Ins.Home();
     }
 

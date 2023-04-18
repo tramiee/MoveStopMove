@@ -18,8 +18,9 @@ public class UIMainMenu : UICanvas
 
     public void PlayButton()
     {
-        UIManager.Ins.CloseUI<UIMainMenu>();
         UIManager.Ins.OpenUI<UIGameplay>();
+        UIManager.Ins.CloseUI<UIMainMenu>();
+       
         LevelManager.Ins.OnPlay();
         CameraFollow.Ins.ChangeState(CameraFollow.State.Gameplay);
     }

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 [RequireComponent(typeof(Rigidbody), typeof(CapsuleCollider))]
 public class Player : Character
@@ -31,7 +32,7 @@ public class Player : Character
 
     public int Coin => Score * 10;
 
-
+    SkinType skinType = SkinType.SKIN_Normal;
     ColorType colorType = ColorType.Blue;
     PantType pantType = PantType.Pant_1;
     HatType hatType = HatType.HAT_Arrow;
@@ -41,12 +42,6 @@ public class Player : Character
     private float time = 0;
     private float times = 1.5f;
 
-
-
-    private void Start()
-    {
-        OnInit();
-    }
 
     public override void OnInit()
     {
@@ -66,7 +61,6 @@ public class Player : Character
                 rb.rotation = Quaternion.LookRotation(rb.velocity);
                 ChangeAnim(Constant.ANIM_RUN);
                 isMoving = true;
-                currentSkin.Weapon.OnEnable();
             }
             else
             {
@@ -77,6 +71,7 @@ public class Player : Character
             if (IsCanAttack)
             {
                 OnAttack();
+                ChangeAnim(Constant.ANIM_ATTACK);
             }
         }
       
@@ -96,23 +91,24 @@ public class Player : Character
         if(target != null && !target.IsDead)
         {
             IsCanAttack = true;
+            
+        }
+        else
+        {
+            IsCanAttack = false;
         }
     }
 
     public override void OnAttack()
     {
         base.OnAttack();
-        if(target != null && IsCanAttack  && currentSkin.Weapon.WeaponAcitve)
+        if(IsCanAttack && currentSkin.Weapon.WeaponAcitve)
         {
             Throw();
+            IsCanAttack = false;
 
-           /* time += Time.deltaTime;
-            if(times < time)
-            {
-                Throw();
-                ResetAnim();
-            }*/
         }
+
     }
 
     public override void AddTarget(Character target)
@@ -137,13 +133,59 @@ public class Player : Character
         ClearTarget();
     }
 
+    public override void SetSize(float size)
+    {
+        base.SetSize(size);
+        CameraFollow.Ins.SetRateOffset((this.size - MIN_SIZE) / (MAX_SIZE - MIN_SIZE));
+    }
+
+
     public override void WearClothes()
     {
         base.WearClothes();
+        ChangeSkin(skinType);
         ChangeColor(colorType);
         ChangePant(pantType);
         ChangeWeapon(weaponType);
         ChangeHat(hatType);
         ChangeAccessory(accessoryType);
+    }
+
+    public void TryClothes(UIShop.ShopType shopType, Enum type)
+    {
+        switch (shopType)
+        {
+            case UIShop.ShopType.Pant:
+                ChangePant((PantType)type);
+                break;
+            case UIShop.ShopType.Hat:
+                currentSkin.DespawnHat();
+                ChangeHat((HatType)type);
+                break;
+            case UIShop.ShopType.Accessory:
+                currentSkin.DespawnAccessory();
+                ChangeAccessory((AccessoryType)type);
+                break;
+            case UIShop.ShopType.Color:
+                ChangeColor((ColorType)type);
+                break;
+            case UIShop.ShopType.Weapon:
+                currentSkin.DespawnWeapon();
+                ChangeWeapon((WeaponType)type);
+                break;
+            default:
+                break;
+        }
+    }
+
+    //take cloth from data
+    internal void OnTakeClothsData()
+    {
+        // take old cloth data
+        colorType = UserData.Ins.playerColor;
+        weaponType = UserData.Ins.playerWeapon;
+        hatType = UserData.Ins.playerHat;
+        accessoryType = UserData.Ins.playerAccessory;
+        pantType = UserData.Ins.playerPant;
     }
 }

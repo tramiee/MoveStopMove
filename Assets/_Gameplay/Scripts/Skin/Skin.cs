@@ -18,6 +18,9 @@ public class Skin : GameUnit
 
     public Weapon Weapon => currentWeapon;
 
+    [SerializeField] Animator anim;
+    public Animator Anim => anim;
+
 
     [SerializeField] bool IsCanChange = false;
 

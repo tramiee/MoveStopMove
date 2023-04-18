@@ -10,14 +10,13 @@ public class Character : GameUnit
     public const float MAX_SIZE = 4f;
     public const float MIN_SIZE = 1f;
 
-    [SerializeField] private Animator anim;
     private string currentAnimName;
     
-    private Vector3 targetPoint;
+    public Vector3 targetPoint;
 
     [SerializeField] GameObject mask;
 
-    private float size = 1f;
+    public float size = 1f;
     private int score;
 
     public int Score => score;
@@ -34,6 +33,7 @@ public class Character : GameUnit
 
     private List<Character> targets = new List<Character>();
     protected Character target;
+
 
     private void Update()
     {
@@ -78,9 +78,8 @@ public class Character : GameUnit
         target = GetCharacterInRange();
         if(WeaponActive && target != null && !target.IsDead)
         {
-            targetPoint = target.transform.position;
-            Quaternion rotarget = Quaternion.LookRotation(targetPoint - transform.position);
-            transform.rotation = Quaternion.RotateTowards(transform.rotation, rotarget, 100f);
+            targetPoint = target.TF.position;
+            TF.LookAt(targetPoint + (TF.position.y - targetPoint.y) * Vector3.up);
             ChangeAnim(Constant.ANIM_ATTACK);
         }
     }
@@ -122,13 +121,14 @@ public class Character : GameUnit
 
     public void ChangeAnim(string animName)
     {
-        if(currentAnimName != animName)
+        if(this.currentAnimName != animName)
         {
-            anim.ResetTrigger(currentAnimName);
-            currentAnimName = animName;
-            anim.SetTrigger(currentAnimName);
+            currentSkin.Anim.ResetTrigger(this.currentAnimName);
+            this.currentAnimName = animName;
+            currentSkin.Anim.SetTrigger(this.currentAnimName);
         }
     }
+
     public void SetMask(bool active)
     {
         mask.SetActive(active);
@@ -195,5 +195,10 @@ public class Character : GameUnit
         currentSkin.ChangeAccessory(accessoryType);
     }
 
-   
+    public void ChangeSkin(SkinType skinType)
+    {
+        currentSkin = SimplePool.Spawn<Skin>((PoolType)skinType, TF);
+    }
+
+
 }

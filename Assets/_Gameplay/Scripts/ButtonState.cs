@@ -4,15 +4,16 @@ using UnityEngine;
 
 public class ButtonState : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public enum State { Buy, Equip, Equiped}
 
-    // Update is called once per frame
-    void Update()
+    public GameObject[] btnObjs;
+
+    public void SetState(State state)
     {
-        
+        for(int i = 0; i < btnObjs.Length; i++)
+        {
+            btnObjs[i].SetActive(false);
+        }
+        btnObjs[(int)state].SetActive(true);
     }
 }

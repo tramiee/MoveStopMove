@@ -11,15 +11,18 @@ public class UIFail : UICanvas
     public override void Open()
     {
         base.Open();
+        GameManager.Ins.ChangState(GameState.Finish);
     }
 
     public void HomeButton()
     {
+        LevelManager.Ins.Home();
 
     }
 
     public void x2CoinButton()
     {
+        LevelManager.Ins.Home();
 
     }
 

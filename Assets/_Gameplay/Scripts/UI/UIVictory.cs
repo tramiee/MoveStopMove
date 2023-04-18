@@ -5,8 +5,8 @@ using TMPro;
 
 public class UIVictory : UICanvas
 {
-    private int coin;
     [SerializeField] TextMeshProUGUI txtCoin;
+    private int coin;
     public override void Open()
     {
         base.Open();
@@ -15,11 +15,14 @@ public class UIVictory : UICanvas
 
     public void x2CoinButton()
     {
-
+        LevelManager.Ins.NextLevel();
+        LevelManager.Ins.Home();
     }
 
     public void NextLevelButton()
     {
+        LevelManager.Ins.NextLevel();
+        LevelManager.Ins.Home();
 
     }
 
